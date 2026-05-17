@@ -12,19 +12,31 @@ jobs:
  
     steps:
       - name: Install Newman
-        run: npm install -g newman newman-reporter-htmlextra
+        run: npm install -g newman newman-reporter-htmlextra newman-reporter-junitfull
  
       - name: Run Postman Collection
-        continue-on-error: true   # No falla el workflow si hay tests que no pasan
+        continue-on-error: true
         run: |
           newman run \
             "https://api.getpostman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --environment \
             "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
-            --reporters cli,htmlextra \
-            --reporter-htmlextra-export results/report.html
+            --reporters cli,htmlextra,junitfull \
+            --reporter-htmlextra-export results/report.html \
+            --reporter-htmlextra-showOnlyFails \
+            --reporter-htmlextra-title "Postman Test Report" \
+            --reporter-junitfull-export results/junit.xml
  
-      - name: Upload Test Report
+      - name: Publish Test Results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: results/junit.xml
+          fail_on_failure: false        # No falla el workflow, solo muestra el reporte
+          include_passed: false         # Solo muestra los que fallaron
+          detailed_summary: true        # Muestra el detalle de cada fallo en el summary
+ 
+      - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
