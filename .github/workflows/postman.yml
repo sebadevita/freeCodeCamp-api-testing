@@ -23,33 +23,23 @@ jobs:
       - name: Create results directory
         run: mkdir -p results
  
-      - name: Generate Newman config with logo
-        run: |
-          LOGO_BASE64=$(base64 -w 0 logo.png)
-          echo '{
-            "reporter": {
-              "htmlextra": {
-                "export": "results/report.html",
-                "title": "Coffee House API",
-                "browserTitle": "Coffee House API",
-                "logo": "data:image/png;base64,'"${LOGO_BASE64}"'",
-                "showEnvironmentData": true,
-                "logs": true,
-                "timeline": true
-              }
-            }
-          }' > newman-config.json
- 
       - name: Run Postman Collection
         continue-on-error: true
         run: |
+          LOGO_BASE64=$(base64 -w 0 logo.png)
           newman run \
             "https://api.getpostman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --environment \
             "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --reporters cli,htmlextra,junit \
             --reporter-junit-export results/junit.xml \
-            --options newman-config.json
+            --reporter-htmlextra-export results/report.html \
+            --reporter-htmlextra-title "Coffee House API" \
+            --reporter-htmlextra-browserTitle "Coffee House API" \
+            --reporter-htmlextra-logs \
+            --reporter-htmlextra-showEnvironmentData \
+            --reporter-htmlextra-timeline \
+            --reporter-htmlextra-logo "data:image/png;base64,${LOGO_BASE64}"
  
       - name: Publish Test Results
         uses: mikepenz/action-junit-report@v4
@@ -67,3 +57,4 @@ jobs:
           name: newman-report
           path: results/report.html
           retention-days: 30
+ 
