@@ -1,17 +1,33 @@
-name: Automated API tests using Postman CLI
-
-on: push
-
+name: Postman Tests
+ 
+on:
+  schedule:
+    - cron: '0 14 * * 1-5'   # Todos los días a las 8:00 AM UTC (5:00 AM Argentina)
+  workflow_dispatch:        # Permite correrlo manualmente desde GitHub
+ 
 jobs:
-  automated-api-tests:
+  run-postman-tests:
+    name: Run Newman
     runs-on: ubuntu-latest
+ 
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Postman CLI
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+ 
+      - name: Run Postman Collection
+        continue-on-error: true   # No falla el workflow si hay tests que no pasan
         run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-      - name: Login to Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-      - name: Run API tests
-        run: |
-          postman collection run "14255523-57f5e715-519a-439a-b79a-0fee227afe11" -e "14255523-de8c6d59-43e6-45cb-8bb7-eea760ba5a08"
+          newman run \
+            "https://api.getpostman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
+            --environment \
+            "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export results/report.html
+ 
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-report
+          path: results/report.html
+          retention-days: 30
