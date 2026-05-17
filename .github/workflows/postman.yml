@@ -29,8 +29,11 @@ jobs:
             "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --reporters cli,htmlextra,junit \
             --reporter-htmlextra-export results/report.html \
-            --reporter-htmlextra-showOnlyFails \
-            --reporter-htmlextra-title "Postman Test Report" \
+            --reporter-htmlextra-title "Valentino Artisan Coffee House API" \
+            --reporter-htmlextra-darkTheme \
+            --reporter-htmlextra-showEnvironmentData \
+            --reporter-htmlextra-showMarkdownLinks \
+            --reporter-htmlextra-timeline \
             --reporter-junit-export results/junit.xml
  
       - name: Publish Test Results
