@@ -15,7 +15,7 @@ jobs:
  
     steps:
       - name: Install Newman
-        run: npm install -g newman newman-reporter-htmlextra newman-reporter-junitfull
+        run: npm install -g newman newman-reporter-htmlextra
  
       - name: Create results directory
         run: mkdir -p results
@@ -27,11 +27,11 @@ jobs:
             "https://api.getpostman.com/collections/${{ secrets.POSTMAN_COLLECTION_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --environment \
             "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
-            --reporters cli,htmlextra,junitfull \
+            --reporters cli,htmlextra,junit \
             --reporter-htmlextra-export results/report.html \
             --reporter-htmlextra-showOnlyFails \
             --reporter-htmlextra-title "Postman Test Report" \
-            --reporter-junitfull-export results/junit.xml
+            --reporter-junit-export results/junit.xml
  
       - name: Publish Test Results
         uses: mikepenz/action-junit-report@v4
