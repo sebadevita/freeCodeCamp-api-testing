@@ -23,6 +23,9 @@ jobs:
       - name: Create results directory
         run: mkdir -p results
  
+      - name: Convert logo to base64
+        run: echo "LOGO_BASE64=$(base64 -w 0 logo.png)" >> $GITHUB_ENV
+ 
       - name: Run Postman Collection
         continue-on-error: true
         run: |
@@ -32,11 +35,14 @@ jobs:
             "https://api.getpostman.com/environments/${{ secrets.POSTMAN_ENVIRONMENT_ID }}?apikey=${{ secrets.POSTMAN_API_KEY }}" \
             --reporters cli,htmlextra,junit \
             --reporter-htmlextra-export results/report.html \
-            --reporter-htmlextra-title "Valentino Artisan Coffee House API" \
-            --reporter-htmlextra-darkTheme \
+            --reporter-htmlextra-title "Coffee House API" \
             --reporter-htmlextra-logs \
             --reporter-htmlextra-showEnvironmentData \
             --reporter-htmlextra-timeline \
+            --reporter-htmlextra-browserTitle "Coffee House API" \
+            --reporter-htmlextra-titleSize 4 \
+            --reporter-htmlextra-infoSectionName "Reporte de los tests de api de coffee house" \
+            --reporter-htmlextra-logo "data:image/png;base64,${{ env.LOGO_BASE64 }}" \
             --reporter-junit-export results/junit.xml
  
       - name: Publish Test Results
@@ -55,3 +61,4 @@ jobs:
           name: newman-report
           path: results/report.html
           retention-days: 30
+ 
