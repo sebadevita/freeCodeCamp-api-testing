@@ -9,10 +9,16 @@ jobs:
   run-postman-tests:
     name: Run Newman
     runs-on: ubuntu-latest
+    permissions:
+      checks: write       # Necesario para publicar resultados de tests
+      contents: read
  
     steps:
       - name: Install Newman
         run: npm install -g newman newman-reporter-htmlextra newman-reporter-junitfull
+ 
+      - name: Create results directory
+        run: mkdir -p results
  
       - name: Run Postman Collection
         continue-on-error: true
