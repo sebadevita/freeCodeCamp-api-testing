@@ -1,0 +1,14 @@
+{
+  "reporter": {
+    "htmlextra": {
+      "export": "results/report.html",
+      "title": "Valentino Artisan Coffee House API",
+      "darkTheme": true,
+      "showEnvironmentData": true,
+      "showMarkdownLinks": true,
+      "timeline": true,
+      "logs": true,
+      "showOnlyFails": false
+    }
+  }
+}
