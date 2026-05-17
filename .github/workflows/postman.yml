@@ -14,6 +14,9 @@ jobs:
       contents: read
  
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+ 
       - name: Install Newman
         run: npm install -g newman newman-reporter-htmlextra
  
@@ -31,8 +34,8 @@ jobs:
             --reporter-htmlextra-export results/report.html \
             --reporter-htmlextra-title "Valentino Artisan Coffee House API" \
             --reporter-htmlextra-darkTheme \
+            --reporter-htmlextra-logs \
             --reporter-htmlextra-showEnvironmentData \
-            --reporter-htmlextra-showMarkdownLinks \
             --reporter-htmlextra-timeline \
             --reporter-junit-export results/junit.xml
  
@@ -41,9 +44,9 @@ jobs:
         if: always()
         with:
           report_paths: results/junit.xml
-          fail_on_failure: false        # No falla el workflow, solo muestra el reporte
-          include_passed: false         # Solo muestra los que fallaron
-          detailed_summary: true        # Muestra el detalle de cada fallo en el summary
+          fail_on_failure: false
+          include_passed: false
+          detailed_summary: true
  
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
